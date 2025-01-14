@@ -14,6 +14,7 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   late List<Skincare> _searchResult = [];
   late TextEditingController _searchController = TextEditingController();
+  String _selectedCategory = 'All';
 
   @override
   void initState() {
@@ -34,6 +35,22 @@ class _SearchScreenState extends State<SearchScreen> {
 
     setState(() {
       _searchResult = searchResult;
+    });
+  }
+
+  void _sortSkincare(String category) {
+    List<Skincare> sortedResult;
+    if (category == 'All') {
+      sortedResult = widget.allSkincare;
+    } else {
+      sortedResult = widget.allSkincare.where((skincare) {
+        return skincare.kategori == category;
+      }).toList();
+    }
+
+    setState(() {
+      _selectedCategory = category;
+      _searchResult = sortedResult;
     });
   }
 
@@ -74,6 +91,24 @@ class _SearchScreenState extends State<SearchScreen> {
                 ),
               ),
               onChanged: _searchSkincare,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: DropdownButton<String>(
+              value: _selectedCategory,
+              onChanged: (String? newValue) {
+                if (newValue != null) {
+                  _sortSkincare(newValue);
+                }
+              },
+              items: <String>['All', 'Pembersih Wajah', 'Toner', 'Serum']
+                  .map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
             ),
           ),
           Expanded(
